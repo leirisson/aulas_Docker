@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3334:3334"
+    environment:
+      - PORT=3344
+    volumes:
+      - .:/app-node
+    command: npm start
