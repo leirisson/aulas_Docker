@@ -1,2 +1,45 @@
+# volume gerenciado pelo docker
+# definindo o volumes para persistencia de dados
+
+volumes:
+  db_blog:
+  wordpress_vol:
+
+networks:
+  wordpress_net:
+    driver: bridge
+
 services:
+  mysql:
+    image: mysql:8.3.0
+    environment: # variaveis de ambiente
+      MYSQL_ROOT_PASSWORD: senha123456
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: UserBlog
+      MYSQL_PASSWORD: PwdBlog
+    ports:
+      - 3336:3306
+    volumes:
+      - db_blog:/var/lib/mysql
+    networks:
+      - wordpress_net
+
+  wordpress:
+    image: wordpress:6.4.3
+    environment:
+      WORDPRESS_DB_HOST: mysql:3306
+      WORDPRESS_DB_USER: UserBlog
+      WORDPRESS_DB_PASSWORD: PwdBlog
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wordpress_vol:/var/www/html
+    ports:
+      - 3335:80
+    networks:
+      - wordpress_net
+    depends_on:
+      - mysql
   
+
+
+    
