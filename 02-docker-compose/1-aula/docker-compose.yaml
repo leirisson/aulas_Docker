@@ -1,0 +1,5 @@
+services:
+    web:
+      image: fabricioveronez/web-color:green
+      ports:
+        - 3335:80
