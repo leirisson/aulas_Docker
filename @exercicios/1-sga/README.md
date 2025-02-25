@@ -1,63 +1,69 @@
 # Novo SGA
 
-[![Packagist](http://img.shields.io/packagist/v/novosga/novosga.svg)](https://packagist.org/packages/novosga/novosga)
-[![Packagist](http://img.shields.io/packagist/dt/novosga/novosga.svg)](https://packagist.org/packages/novosga/novosga)
-[![Packagist](http://img.shields.io/packagist/dm/novosga/novosga.svg)](https://packagist.org/packages/novosga/novosga)
-[![Packagist](http://img.shields.io/packagist/dd/novosga/novosga.svg)](https://packagist.org/packages/novosga/novosga)
-
-Sistema de Gerenciamento de Atendimento adaptável para grandes e pequenas organizações.
-
-Visite o site para maiores informações: http://novosga.org
-
-## Instalação
-
-Instalação feita via [Composer](http://getcomposer.org/)
-
-*Produção*
-
-```sh
-php composer.phar create-project novosga/novosga novosga "1.*"
-```
-
-*Ou a versão de desenvolvimento*
-
-```sh
-git clone https://github.com/novosga/novosga
-cd novosga
-php composer.phar install
-```
-Note: After installation remember to change the owner of the novosga directory: Example su chown apache:apache novosga -R
-
-## Tecnologia
-
-A aplicação web escrita em PHP utilizando as melhores práticas de desenvolvimento.
-
-- PHP 5.4
-- HTML5
-- CSS3
-- [Doctrine PHP 2.4](http://www.doctrine-project.org/projects/orm.html)
-- [jQuery 1.9](http://jquery.com/)
-- [Twitter Bootstrap 3](http://getbootstrap.com/)
-- [Highcharts](http://www.highcharts.com/)
-
-Testado no seguintes bancos:
-- [PostgreSQL](http://www.postgresql.org/)
-- [MySQL](http://www.mysql.org)
+Support queue management system.
 
 
-## Demo
+## Installation
 
-Versão de desenvolvimento disponível online através do link: http://novosga.org/demo
+### Via Composer
 
-- **Usuário**: admin
-- **Senha**: 123456
+Create project:
 
-## Contribuições
+    composer create-project "novosga/novosga:^2.1" novosga2
 
-Gostou dessa nova versão? Necessita de alguma funcionalidade ou quer apenas contribuir para manter o projeto a todo vapor?
+Run app installation command and follow instructions:
 
-Entre em contato via [fórum](http://novosga.org/forum/), [blog](http://novosga.org/blog/) ou [issues](https://github.com/novosga/novosga/issues/)!
+    export APP_ENV=prod
+    export LANGUAGE=pt_BR
+    export DATABASE_URL="mysql://user:pass@localhost:5432/novosgadb"
+    
+    bin/console novosga:install
 
-**Autor**: [Rogério Alencar Lino Filho](http://rogeriolino.com/)
 
-**Colaboradores**: https://github.com/novosga/novosga/contributors
+### Via Docker
+
+Documentation in the Novo SGA official [docker repository](https://github.com/novosga/docker/tree/master/novosga-2.1).
+
+
+### Via Git
+
+Clone repository:
+
+    git clone https://github.com/novosga/novosga.git novosga2
+
+Then follow Composer install instruction.
+
+
+### Automated installation
+
+To automated installation you need to set up the following environment variables before run `novosga:install` command:
+
+**Database**
+
+- DATABASE_URL
+
+**Default administrator user**
+
+- NOVOSGA_ADMIN_USERNAME
+- NOVOSGA_ADMIN_PASSWORD
+- NOVOSGA_ADMIN_FIRSTNAME
+- NOVOSGA_ADMIN_LASTNAME
+
+**Default unity**
+
+- NOVOSGA_UNITY_NAME
+- NOVOSGA_UNITY_CODE
+
+**Default priority 0**
+
+- NOVOSGA_NOPRIORITY_NAME
+- NOVOSGA_NOPRIORITY_DESCRIPTION
+
+**Default priority 1**
+
+- NOVOSGA_PRIORITY_NAME
+- NOVOSGA_PRIORITY_DESCRIPTION
+
+**Default attendance place**
+
+- NOVOSGA_PLACE_NAME

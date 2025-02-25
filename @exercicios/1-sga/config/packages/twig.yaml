@@ -1,0 +1,9 @@
+twig:
+    default_path: '%kernel.project_dir%/templates'
+    form_themes:
+        - theme.html.twig
+    globals:
+        locale: "%locale%"
+        version: "%version%"
+        title: "%title%"
+        mercure_url: '%mercure_url%'

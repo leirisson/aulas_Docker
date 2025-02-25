@@ -1,0 +1,159 @@
+{% extends "admin.html.twig" %}
+
+{% block adminContent %}
+    <h1>
+        {{ 'admin.webapi.title'|trans }}
+        <small>
+            {{ 'admin.webapi.subtitle'|trans }}
+        </small>
+    </h1>
+    
+    <hr>
+    
+    <div id="admin">
+        <fieldset>
+            <legend>{{ 'admin.webapi.clients.title'|trans }}</legend>
+            
+            <p>{{ 'admin.webapi.clients.subtitle'|trans }}</p>
+            
+            <table class="table table-bordered">
+                <thead class="thead-light">
+                    <tr>
+                        <th>{{ 'admin.webapi.clients.description'|trans }}</th>
+                        <th>{{ 'admin.webapi.clients.public_id'|trans }}</th>
+                        <th>{{ 'admin.webapi.clients.public_secret'|trans }}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody v-cloak>
+                    <tr v-for="client in clients">
+                        <td>
+                            {% verbatim %}
+                                {{ client.description }}
+                            {% endverbatim %}
+                        </td>
+                        <td>
+                            {% verbatim %}
+                                {{ client.publicId }}
+                            {% endverbatim %}
+                        </td>
+                        <td>
+                            <a href="#" title="{{ 'label.view'|trans }}" v-on:click.prevent="showSecret(client, $event)">
+                                ******
+                            </a>
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-danger" title="{{ 'button.remove'|trans }}"
+                                    v-on:click.prevent="removeClient(client)">
+                                <span class="fa fa-trash"></span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-secondary" v-on:click.prevent="newClient">
+                                <i class="fa fa-plus"></i>
+                                {{ 'button.add'|trans }}
+                            </button>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </fieldset>
+
+        <div id="dialog-api-client" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form v-on:submit.prevent="addClient">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ 'admin.webapi.clients.modal'|trans }}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>{{ 'admin.webapi.clients.description'|trans }}</label>
+                                <input type="text" class="form-control" v-model="client.description" name="description" maxlength="30">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                {{ 'button.close'|trans }}
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                {{ 'button.add'|trans }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        (function () {
+            'strinct'
+            
+            var app = new Vue({
+                el: '#admin',
+                data: {
+                    client: {},
+                    clients: []
+                },
+                methods: {
+                    load: function() {
+                        var self = this;
+                        App.ajax({
+                            url: '{{ path('admin_api_clients') }}',
+                            success: function(response) {
+                                self.clients = response.data;
+                            }
+                        });
+                    },
+                    newClient: function() {
+                        this.client = {};
+                        $('#dialog-api-client').modal('show');
+                    },
+                    addClient: function() {
+                        var self = this;
+                        App.ajax({
+                            url: '{{ path('admin_api_newclient') }}',
+                            type: 'POST',
+                            data: self.client,
+                            success: function() {
+                                self.load();
+                                $('#dialog-api-client').modal('hide');
+                            }
+                        });
+                    },
+                    showSecret: function (client, evt) {
+                        evt.target.parentNode.innerHTML = client.secret;
+                    },
+                    removeClient: function (client) {
+                        var self = this;
+                        if (confirm('{{ 'admin.webapi.clients.remove_alert'|trans }}')) {
+                            App.ajax({
+                                url: '{{ path('admin_api_clients') }}/' + client.id,
+                                type: 'DELETE',
+                                success: function() {
+                                    self.load();
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+            
+            app.load();
+        })();
+    </script>
+{% endblock %}
