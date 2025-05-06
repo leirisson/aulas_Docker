@@ -2,25 +2,30 @@ version: '3.8'
 
 services:
   mysql:
-    image: mysql:5.7
+    image: mysql:5.7.23
     container_name: mysql
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: glpi
       MYSQL_DATABASE: glpidb
       MYSQL_USER: glpi_user
       MYSQL_PASSWORD: glpi
+    ports:
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
       - glpi-network
 
   glpi:
-    image: diouxx/glpi
+    image: diouxx/glpi:latest
     container_name: glpi
+    restart: always
+    ports:
+      - "8080:80"
+      - "8443:443"
     depends_on:
       - mysql
-    ports:
-      - "80:80"
     networks:
       - glpi-network
 

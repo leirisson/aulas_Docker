@@ -8,3 +8,7 @@ Agora basta preencher assim:
 
 Clique em “Continuar”, e na próxima tela escolha o banco de dados glpidb.
 Se você quiser, posso gerar um script start-glpi.sh que faz todo o processo de subir os containers automaticamente com docker-compose. Deseja isso?
+
+
+produção: http://host.docker.internal:5678/webhook/b917d3cd-fbbc-4245-bcdd-c5048d7696b1
+teste: http://host.docker.internal:5678/webhook-test/b917d3cd-fbbc-4245-bcdd-c5048d7696b1
