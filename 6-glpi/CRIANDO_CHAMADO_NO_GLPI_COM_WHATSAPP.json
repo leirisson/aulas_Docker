@@ -1,0 +1,342 @@
+{
+  "name": "CRIANDO CHAMADO NO GLPI COM WHATSAPP",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bb36a80c-cf54-481e-b1da-d514bf783b62",
+              "name": "App-Token",
+              "value": "IVPRMDKrtlVErEYoHGU7HjSL3CDUOlV8ZPGKuRyi",
+              "type": "string"
+            },
+            {
+              "id": "0e210c4b-c0b5-4b7d-a4ba-9a32eb55e1e7",
+              "name": "Authorization",
+              "value": "user_token ACIK9p57OlQ3jv9K36fszKn9SmEXsDDTJmNCfUcw",
+              "type": "string"
+            },
+            {
+              "id": "d31f6444-7068-4659-a41c-6c2316ac695d",
+              "name": "apiUrl",
+              "value": "http://host.docker.internal/apirest.php",
+              "type": "string"
+            },
+            {
+              "id": "c9a62644-832b-4c3b-836f-cac84b50dd98",
+              "name": "Content-Type",
+              "value": "application/json",
+              "type": "string"
+            },
+            {
+              "id": "f9dde2c1-d0e9-4c3b-8723-dc4851df7114",
+              "name": "name_contato",
+              "value": "={{ $json.body.data.pushName }}",
+              "type": "string"
+            },
+            {
+              "id": "1f5b314f-f32e-43f9-88aa-5e6319489a4f",
+              "name": "number_user",
+              "value": "={{ $json.body.data.key.remoteJid.split('@').first() }}",
+              "type": "string"
+            },
+            {
+              "id": "de14c6e9-147c-400e-8871-15a8f88ca1e1",
+              "name": "message_user",
+              "value": "={{ $json.body.data.message.conversation }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -660,
+        -280
+      ],
+      "id": "e84a4331-6d64-4bf4-bab7-97b4e3f34adc",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Edit Fields').item.json.apiUrl }}/Ticket",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Session-Token",
+              "value": "={{ $('obtendo session token').item.json.session_token }}"
+            },
+            {
+              "name": "App-Token",
+              "value": "={{ $('Edit Fields').item.json['App-Token'] }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "={{ $('Edit Fields').item.json['Content-Type'] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\n  \"input\": {\n    \"name\": {{ $json.IA_saida.toJsonString() }},\n    \"content\": \"Descrição detalhada...\",\n    \"status\": 1,\n    \"priority\": 3\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        300,
+        -200
+      ],
+      "id": "dbb15ca4-212b-4167-bd31-10f0f598808f",
+      "name": "Abrir Chamado"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.apiUrl }}/initSession/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "App-Token",
+              "value": "={{ $json['App-Token'] }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "={{ $json.Authorization }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -460,
+        -120
+      ],
+      "id": "24dd8669-2c37-4e0b-8709-655cf598d728",
+      "name": "obtendo session token"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "31b75e6f-7e94-4bb8-9def-d5ef9f2a00a3",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -840,
+        -80
+      ],
+      "id": "62d16217-a8c6-43bb-800f-4fd78dceae4c",
+      "name": "Webhook",
+      "webhookId": "31b75e6f-7e94-4bb8-9def-d5ef9f2a00a3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Você é um assistente virtual especializado em classificar chamados de TI no GLPI. Seu papel é analisar a descrição do usuário e identificar a qual serviço técnico a solicitação pertence, com base nesta lista de categorias:\n\nuse o nome do usuario: {{ $('Edit Fields').item.json.name_contato }}\n\nSuporte a computadores e periféricos (problemas em hardware, impressoras, monitores, etc.)\n\nCadastro ou alteração de usuários e senhas (acesso a sistemas, reset de senha)\n\nLiberação ou bloqueio de internet (restrição de sites, falha de conexão)\n\nAtivação de ponto de rede (novas portas de rede, cabos)\n\nConfiguração de telefonia (ramais, telefones VoIP)\n\nSuporte para eventos e reuniões (videoconferência, equipamentos de áudio)\n\nInstalação de softwares homologados (programas autorizados pela empresa)\n\nBackup e restauração de dados (recuperação de arquivos, falhas em backup)\n\nGerenciamento de firewall/VPN (regras de acesso, configuração de VPN)\n\nReportar falhas de segurança (vazamentos, phishing, ataques)\n\nOutros assuntos de TI (se não se encaixar nos acima, mas ainda for sobre TI)\n\nComo responder:\n\nSe o usuário descrever um problema técnico, classifique-o na categoria correta e responda de forma sucinta, confirmando o tipo de chamado.\n\nExemplo: \"Entendi! Vou abrir um chamado de Suporte a computadores e periféricos para resolver o problema da impressora. Algum detalhe adicional?\"\n\nSe a solicitação não for sobre TI, responda de forma educada, informando que só pode ajudar com assuntos técnicos.\n\nExemplo: \"Desculpe, mas só posso ajudar com solicitações de TI. Se precisar de suporte técnico, pode me descrever o problema?\"\n\nSe a descrição for muito vaga, peça mais informações antes de classificar.\n\nExemplo: \"Poderia detalhar melhor o problema? Por exemplo, é um erro de software, falha de hardware ou configuração de rede?\"\n\nTom de voz:\n\nProfissional, mas amigável (evite termos muito técnicos se o usuário for leigo).\n\nObjetivo (não liste todas as categorias para o usuário, apenas classifique com base no que ele descreveu).\n\nRegras:\n\nNunca sugira categorias ao usuário (ele não deve escolher uma opção da lista).\n\nNunca responda sobre assuntos não relacionados a TI (ex.: RH, finanças, culinária).\n\nSe não tiver certeza da categoria, peça mais detalhes antes de classificar. {{ $('Edit Fields').item.json.name_contato }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -280,
+        -240
+      ],
+      "id": "edd0e351-dd41-4ef1-8a14-f157bd14779d",
+      "name": "AGENTE DE TRIAGEM"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        60
+      ],
+      "id": "6e9b34dd-00b9-4326-888b-233d1c18cd9c",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "FgPkFRN6QHUqnYjW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Edit Fields').item.json.number_user }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -180,
+        60
+      ],
+      "id": "a464333e-864a-4cb8-948d-38eb4c1e87c8",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "855b149d-bf7b-4a27-8cf2-c071c0656b57",
+              "name": "IA_saida",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        -240
+      ],
+      "id": "86bc7cc4-733a-4e4a-ab3f-fc5490182af0",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "content": "## TRIAGEM DO CHAMADO COM O CLIENTE",
+        "height": 580,
+        "width": 1080
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -880,
+        -340
+      ],
+      "typeVersion": 1,
+      "id": "5078c52e-747f-4f47-aaa9-e8addfbd9c20",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## ABERTURA DO CHAMADO",
+        "height": 580,
+        "width": 500,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        220,
+        -340
+      ],
+      "typeVersion": 1,
+      "id": "09f278bb-f7b2-4e5c-a5bb-37e3ada012af",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "obtendo session token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "obtendo session token": {
+      "main": [
+        [
+          {
+            "node": "AGENTE DE TRIAGEM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AGENTE DE TRIAGEM": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AGENTE DE TRIAGEM",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AGENTE DE TRIAGEM",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Abrir Chamado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "23a64601-57d7-4e61-8df4-861cef9e1aa0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7b8636ee0f789117c34bd57eaa2a604bbe71c29e490c4b57a9cd75317b3b0232"
+  },
+  "id": "1MVjTMnhGONWrLn9",
+  "tags": []
+}
