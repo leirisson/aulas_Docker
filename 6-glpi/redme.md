@@ -12,3 +12,20 @@ Se você quiser, posso gerar um script start-glpi.sh que faz todo o processo de 
 
 produção: http://host.docker.internal:5678/webhook/b917d3cd-fbbc-4245-bcdd-c5048d7696b1
 teste: http://host.docker.internal:5678/webhook-test/b917d3cd-fbbc-4245-bcdd-c5048d7696b1
+http://host.docker.internal
+
+{
+    "input":{
+  "name": {{ $json.output }},
+    "content": "DENKE ARENTINA\nPINORIUM\nTEMPLY: MAR SOLUCIO",
+    "_users_id_requester": 123,
+     "requester": "email@usuario.com", 
+    "urgency": 3,
+    "impact": 2,
+    "priority": 4,
+    "itilcategories_id": 1,
+    "type": 1,
+    "status": 1,
+    "requesttypes_id": 1
+    }
+} 
