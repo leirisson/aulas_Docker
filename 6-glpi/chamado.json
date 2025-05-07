@@ -1,0 +1,13 @@
+{
+    "input": {
+        "name": "chamado com prioridade baixa 1", 
+        "content": "primeiro chamado",
+        "Requerente":"Leirisson souza",
+        "priority": 3,
+        "urgency": 3,
+        "status": 1,
+        "completename": "categoria: redes",
+        "use_notification": "teste@exemplo.com",
+        "alternative_email": "email2@exemplo.com"
+    }
+}

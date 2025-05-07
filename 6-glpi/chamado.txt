@@ -1,0 +1,21 @@
+{
+    "input": {
+        "name": "chamado com prioridade baixa 1",  -> titulo do chamado
+        "content": "primeiro chamado", -> descrição do chamado 
+        "Requerente":"Leirisson souza", -> altor do chamado
+        "priority": 3, -> Prioridade: Muito Baixa, Baixa, Media, alta, Muito Alta, Critica
+        "urgency": 3, ->  Urgência do chamado
+        "status": 1, ->   
+    }
+}
+
+{
+    "input": {
+        titulo do chamado
+        descrição do chamado 
+        altor do chamado
+       Prioridade: Muito Baixa, Baixa, Media, alta, Muito Alta, Critica
+        Urgência do chamado
+        status: do chamado   
+    }
+}
