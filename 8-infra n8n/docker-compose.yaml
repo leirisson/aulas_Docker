@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  api:
+    container_name: evolution_api
+    image: atendai/evolution-api:homolog
+    restart: always
+    depends_on:
+      - redis
+      - postgres
+    ports:
+      - "8080:8080" # Expor a API na porta 8080
+    volumes:
+      - evolution_instances:/evolution/instances # Persistir dados da API
+    networks:
+      - evolution-net # Conectar à rede compartilhada
+    env_file:
+      - .env # Carregar variáveis de ambiente do arquivo .env
+    expose:
+      - "8080" # Expor a porta internamente (opcional)
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    networks:
+      - evolution-net # Conectar à rede compartilhada
+    command: >
+      redis-server --port 6379 --appendonly yes # Configurar Redis com persistência
+    volumes:
+      - evolution_redis:/data # Persistir dados do Redis
+    ports:
+      - "6379:6379" # Expor Redis na porta 6379
+    expose:
+      - "6379" # Expor a porta internamente (opcional)
+
+  postgres:
+    container_name: postgres
+    image: postgres:15
+    networks:
+      - evolution-net # Conectar à rede compartilhada
+    command: >
+      postgres -c max_connections=1000 -c listen_addresses='*' # Configurar PostgreSQL
+    restart: always
+    ports:
+      - "5432:5432" # Expor PostgreSQL na porta 5432
+    environment:
+      POSTGRES_USER: user # Usuário do banco de dados
+      POSTGRES_PASSWORD: pass # Senha do banco de dados
+      POSTGRES_DB: evolution # Nome do banco de dados
+      POSTGRES_HOST_AUTH_METHOD: trust # Método de autenticação (ajuste conforme necessário)
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Persistir dados do PostgreSQL
+    expose:
+      - "5432" # Expor a porta internamente (opcional)
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: n8n
+    restart: always
+    ports:
+      - "5678:5678" # Expor n8n na porta 5678
+    environment:
+      - DB_TYPE=postgresdb # Usar PostgreSQL como backend
+      - DB_POSTGRESDB_DATABASE=evolution # Banco de dados PostgreSQL
+      - DB_POSTGRESDB_HOST=postgres # Host do PostgreSQL
+      - DB_POSTGRESDB_PORT=5432 # Porta do PostgreSQL
+      - DB_POSTGRESDB_USER=user # Usuário do PostgreSQL
+      - DB_POSTGRESDB_PASSWORD=pass # Senha do PostgreSQL
+      - DB_POSTGRESDB_SCHEMA=public # Schema do PostgreSQL
+    volumes:
+      - n8n_data:/home/node/.n8n # Persistir dados do n8n
+    networks:
+      - evolution-net # Conectar à rede compartilhada
+    depends_on:
+      - postgres # Garantir que o PostgreSQL esteja disponível
+
+volumes:
+  evolution_instances: # Volume para dados da API
+  evolution_redis: # Volume para dados do Redis
+  postgres_data: # Volume para dados do PostgreSQL
+  n8n_data: # Volume para dados do n8n
+
+networks:
+  evolution-net:
+    name: evolution-net # Nome da rede
+    driver: bridge # Tipo de driver de rede
