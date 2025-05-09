@@ -21,6 +21,7 @@ services:
     image: redis:latest
     networks:
       - evolution-net
+      - rede_geral
     container_name: redis
     command: >
       redis-server --port 6379 --appendonly yes
