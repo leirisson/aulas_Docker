@@ -1,7 +1,7 @@
 services:
   api:
     container_name: evolution_api
-    image: atendai/evolution-api:latest
+    image: atendai/evolution-api:homolog
     restart: always
     depends_on:
       - redis
@@ -21,7 +21,6 @@ services:
     image: redis:latest
     networks:
       - evolution-net
-      - rede_geral
     container_name: redis
     command: >
       redis-server --port 6379 --appendonly yes
@@ -40,19 +39,34 @@ services:
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
       - POSTGRES_DB=evolution
       - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
       - postgres_data:/var/lib/postgresql/data
     expose:
       - 5432
+    n8n-sistema:
+      image: n8nio/n8n
+      ports:
+      - "5678:5678"
+      volumes:
+      - n8n_data :/home/node/.n8n
+      environment:
+      GENERIC_TIMEZONE: America/Manaus
+      restart: unless-stopped
+      networks:
+        - evolution-net
+
+
+    
 
 volumes:
   evolution_instances:
   evolution_redis:
   postgres_data:
+  n8n_data:
 
 
 networks:
